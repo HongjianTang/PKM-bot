@@ -3,6 +3,7 @@ import process
 from dataReceive import DataReceiver
 from replit import db
 
+
 def processInput():
   # Create an instance of DataReceiver
   receiver = DataReceiver()
@@ -13,14 +14,16 @@ def processInput():
 
     # Check if the user wants to quit
     if user_input.lower() == 'quit':
+      process.train()
       return  # Exit the function, returning to the main menu
 
     # Call the receiveData method with the user input
     receiver.receiveData(user_input)
 
+
 def cleanupDatabase():
   for key in db.keys():
-    del(db[key])
+    del (db[key])
 
 
 def main():
@@ -33,7 +36,9 @@ def main():
     print("== START ==")
     while True:  # Keep showing the menu until the program is exited
       print()
-      print("1: Receive Message \n2: Show View \n3: Exit \n4: Cleanup Database \n", end="")
+      print(
+        "1: Receive Message \n2: Show View \n3: Exit \n4: Cleanup Database \n",
+        end="")
 
       input_ready, output_ready, error_ready = select.select([sys.stdin], [],
                                                              [])

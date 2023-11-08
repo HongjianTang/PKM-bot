@@ -7,31 +7,31 @@ import pickle
 from langchain import OpenAI, LLMChain
 from langchain.prompts import Prompt
 import sys
+from replit import db
+import json
 
 
 def train():
-  trainingData = list(Path("training/facts/").glob("**/*.*"))
-
-  if len(trainingData) < 1:
-    print(
-      "The folder training/facts should be populated with at least one .txt or .md file.",
-      file=sys.stderr)
+  if len(db.keys()) < 1:
+    print("The database should contain at least one key-value pair.",
+          file=sys.stderr)
     return
 
   data = []
-  for training in trainingData:
-    with open(training) as f:
-      print(f"Add {f.name} to dataset")
-      data.append(f.read())
+  for key in db.keys():
+    print(f"Add data from key {key} to dataset")
+    data.append(json.loads(db[key]))
 
   # 文本切块，后续需考虑优化md和代码场景
   textSplitter = CharacterTextSplitter(chunk_size=2000, separator="\n")
 
   docs = []
   for sets in data:
-    docs.extend(textSplitter.split_text(sets))
+    ttt = sets["date"] + " " + " " + sets["text"]
+    docs.extend(textSplitter.split_text(ttt))
 
   # 调用ada模型向量化文本
+  print(docs)
   store = FAISS.from_texts(docs, OpenAIEmbeddings())
   faiss.write_index(store.index, "training.index")
   store.index = None
@@ -48,11 +48,11 @@ def runPrompt():
 
   store.index = index
 
-  with open("training/prompt.txt", "r") as f:
+  with open("prompt/prompt.txt", "r") as f:
     promptTemplate = f.read()
 
   prompt = Prompt(template=promptTemplate,
-                  input_variables=["history", "context", "question"])
+                  input_variables=["context", "question"])
 
   llmChain = LLMChain(prompt=prompt, llm=OpenAI(temperature=0.25))
 
@@ -62,8 +62,7 @@ def runPrompt():
     for i, doc in enumerate(docs):
       contexts.append(f"Context {i}:\n{doc[0].page_content}")
       answer = llmChain.predict(question=question,
-                                context="\n\n".join(contexts),
-                                history=history)
+                                context="\n\n".join(contexts))
     return answer
 
   history = []
