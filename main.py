@@ -1,4 +1,4 @@
-import sys, select, os, subprocess
+import sys, select, os
 import process
 from dataReceive import DataReceiver
 from replit import db
