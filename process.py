@@ -1,11 +1,8 @@
-from pathlib import Path
 from langchain.text_splitter import CharacterTextSplitter
 import faiss
 from langchain.vectorstores import FAISS
 from langchain.embeddings import OpenAIEmbeddings
 import pickle
-from langchain import OpenAI, LLMChain
-from langchain.prompts import Prompt
 import sys
 from replit import db
 import json
@@ -38,34 +35,3 @@ def train():
 
   with open("training/faiss.pkl", "wb") as f:
     pickle.dump(store, f)
-
-
-def runPrompt():
-  index = faiss.read_index("training.index")
-
-  with open("training/faiss.pkl", "rb") as f:
-    store = pickle.load(f)
-
-  store.index = index
-
-  with open("prompt/prompt.txt", "r") as f:
-    promptTemplate = f.read()
-
-  prompt = Prompt(template=promptTemplate,
-                  input_variables=["context", "question"])
-
-  llmChain = LLMChain(prompt=prompt, llm=OpenAI(temperature=0.25))
-
-  def onMessage(question):
-    docs = store.similarity_search_with_score(question, k=5)
-    contexts = []
-    for i, doc in enumerate(docs):
-      contexts.append(f"Context {i}:\n{doc[0].page_content}")
-      answer = llmChain.predict(question=question,
-                                context="\n\n".join(contexts))
-    return answer
-
-  while True:
-    question = input("Ask a question > ")
-    answer = onMessage(question)
-    print(answer)

@@ -1,5 +1,6 @@
 import sys, select, os
 import process
+import prompt.prompt
 from dataReceive import DataReceiver
 from replit import db
 
@@ -50,7 +51,7 @@ def main():
           # process.train()
         elif choice == "2":
           print("BOT CONVERSATION MODE")
-          process.runPrompt()
+          prompt.prompt.runPrompt()
         elif choice == "3":
           print("Exiting...")
           break  # Exit the while loop and end the program
