@@ -56,7 +56,7 @@ def runPrompt():
 
   llmChain = LLMChain(prompt=prompt, llm=OpenAI(temperature=0.25))
 
-  def onMessage(question, history):
+  def onMessage(question):
     docs = store.similarity_search_with_score(question, k=5)
     contexts = []
     for i, doc in enumerate(docs):
@@ -65,10 +65,7 @@ def runPrompt():
                                 context="\n\n".join(contexts))
     return answer
 
-  history = []
   while True:
     question = input("Ask a question > ")
-    answer = onMessage(question, history)
-    print(f"Bot: {answer}")
-    history.append(f"Human: {question}")
-    history.append(f"Bot: {answer}")
+    answer = onMessage(question)
+    print(answer)
