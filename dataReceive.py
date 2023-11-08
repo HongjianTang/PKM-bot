@@ -1,5 +1,6 @@
 from replit import db
 import json
+from datetime import datetime
 
 
 class DataReceiver:
@@ -23,7 +24,11 @@ class DataReceiver:
     # Append the received data to the messages list
     self.messages.append(data_string)
     # create a json object, "text" is data_string, "date" is 2023-10-01, "time" is 10:00
-    newJson = {"text": data_string, "date": "2023-11-08", "time": "10:00"}
+    newJson = {
+      "text": data_string,
+      "date": datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+      "time": datetime.now().strftime('%H:%M:%S')
+    }
 
     # insert message to database, the key is equal to the number of keys in database
     db[str(len(db.keys()))] = json.dumps(newJson)
