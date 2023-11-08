@@ -21,8 +21,9 @@ class DataReceiver:
 
     # Append the received data to the messages list
     self.messages.append(data_string)
-    # insert message to database
-    db["messages"] = data_string
+    # insert message to database, the key is equal to the number of keys in database
+    db[str(len(db.keys()))] = data_string
 
     # Print the current list of messages
-    print(self.messages)
+    for key in db.keys():
+      print(key+": "+db[key])
